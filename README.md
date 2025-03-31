@@ -1,2 +1,3 @@
-# flohmarktscanner
-Eine App zur automatischen Erkennung und Preisermittlung von Flohmarktartikeln über Bildanalyse und API-Suchen.
+# Flohmarktscanner Backend
+
+Backend API für die Flohmarktscanner-App.
