@@ -1,11 +1,10 @@
 from fastapi import FastAPI
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
+from app import upload
 
 app = FastAPI()
 
 @app.get('/')
 def read_root():
     return {"message": "Flohmarktscanner API is running!"}
+
+app.include_router(upload.router)

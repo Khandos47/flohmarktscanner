@@ -1,3 +1,3 @@
 # Flohmarktscanner Backend
 
-Backend API für die Flohmarktscanner-App.
+Backend API mit Upload-Funktion für die Flohmarktscanner-App.
