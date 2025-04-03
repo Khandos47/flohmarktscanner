@@ -1,30 +1,44 @@
-
 from flask import Flask, request, jsonify
-from app.vision import detect_labels
-from app.price import get_price_estimate
+from flask_cors import CORS
+from google.cloud import vision
+import io
+import os
 
 app = Flask(__name__)
+CORS(app)
 
-@app.route("/")
+@app.route('/')
 def home():
-    return "Flohmarktscanner API is running."
+    return 'FlohmarktScanner API läuft!'
 
-@app.route("/upload", methods=["POST"])
-def upload_image():
+@app.route('/upload', methods=['POST'])
+def upload_file():
     if 'file' not in request.files:
-        return jsonify({"error": "No file part"}), 400
+        return jsonify({'error': 'No file provided'}), 400
 
     file = request.files['file']
+
     if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
+        return jsonify({'error': 'No file selected'}), 400
 
-    labels = detect_labels(file)
-    price = get_price_estimate(labels)
+    try:
+        content = file.read()
+        client = vision.ImageAnnotatorClient()
+        image = vision.Image(content=content)
+        response = client.label_detection(image=image)
+        labels = [label.description for label in response.label_annotations]
 
-    return jsonify({
-        "labels": labels,
-        "estimated_price": price
-    })
+        estimated_price = "46,75 €"  # Dummy-Preis solange eBay API noch fehlt
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+        return jsonify({
+            'estimated_price': {
+                'keywords': labels,
+                'estimated_price': estimated_price
+            }
+        })
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
